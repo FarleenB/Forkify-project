@@ -4,6 +4,8 @@
 
 
 import icons from 'url:../img/icons.svg';
+import 'core-js/stable';
+import 'regenerator-runtime/runtime'
 
 const img = document.createElement("img");
 img.src = icons;
@@ -24,10 +26,11 @@ const timeout = function (s) {
 
 ///////////////////////////////////////
 
+
 const renderSpinner = function(parentEl) {
-const markup = ` < <div class="spinner">
+const markup = `<div class="spinner">
           <svg>
-            <use href="src/img/icons.svg#icon-loader"></use>
+            <use href="${icons}#icon-loader"></use>
           </svg>
         </div> 
         `;
@@ -37,14 +40,19 @@ parentEl.insertAdjacentHTML('afterbegin', markup)
 
 const showRecipe = async function() {
   try{
-    renderSpinner(recipeContainer);
 
+     const id = window.location.hash.slice(1);
+     console.log(id);
+     if(!id) return
+
+    renderSpinner(recipeContainer);
+   
 
 
     // 1) Loading recipe
 const res = await fetch(
  // 'https://forkify-api.herokuapp.com/api/v2/recipes/664c8f193e7aa067e94e86ba'
-  'https://forkify-api.herokuapp.com/api/v2/recipes/5ed6604591c37cdc054bc886'
+  `https://forkify-api.herokuapp.com/api/v2/recipes/${id}`
 );
 const data = await res.json();
 
@@ -162,6 +170,11 @@ recipeContainer.insertAdjacentHTML('afterbegin', markup)
 };
 
 showRecipe();
+
+['hashchange', 'load'].forEach(ev => window.addEventListener(ev,showRecipe )) 
+
+// window.addEventListener('hashchange', showRecipe);
+// window.addEventListener('load', showRecipe);
 
 
 
