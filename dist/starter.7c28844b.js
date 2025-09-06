@@ -160,11 +160,11 @@
       });
     }
   }
-})({"cdvRe":[function(require,module,exports,__globalThis) {
+})({"e8Une":[function(require,module,exports,__globalThis) {
 var global = arguments[3];
 var HMR_HOST = null;
 var HMR_PORT = null;
-var HMR_SERVER_PORT = 59242;
+var HMR_SERVER_PORT = 60020;
 var HMR_SECURE = false;
 var HMR_ENV_HASH = "439701173a9199ea";
 var HMR_USE_SSE = false;
@@ -675,9 +675,6 @@ var _modelJs = require("../model.js");
 var _recipeviewJs = require("../views/recipeview.js");
 var _recipeviewJsDefault = parcelHelpers.interopDefault(_recipeviewJs);
 var _runtime = require("regenerator-runtime/runtime");
-const img = document.createElement("img");
-img.src = icons;
-document.body.appendChild(img);
 const recipeContainer = document.querySelector('.recipe');
 const timeout = function(s) {
     return new Promise(function(_, reject) {
@@ -704,10 +701,11 @@ const controlRecipes = async function() {
     }
 };
 controlRecipes();
+//['hashchange', 'load'].forEach(ev => window.addEventListener(ev,showRecipe )) 
 [
     'hashchange',
     'load'
-].forEach((ev)=>window.addEventListener(ev, showRecipe));
+].forEach((ev)=>window.addEventListener(ev, controlRecipes));
 
 },{"core-js/modules/web.immediate.js":"bzsBv","../model.js":"1OiUm","regenerator-runtime/runtime":"f6ot0","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","../views/recipeview.js":"lQ82q"}],"bzsBv":[function(require,module,exports,__globalThis) {
 'use strict';
@@ -1967,13 +1965,14 @@ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "state", ()=>state);
 parcelHelpers.export(exports, "loadRecipe", ()=>loadRecipe);
+var _config = require("./js/config");
 const state = {
     recipe: {}
 };
 const loadRecipe = async function(id) {
     try {
         const res = await fetch(// 'https://forkify-api.herokuapp.com/api/v2/recipes/664c8f193e7aa067e94e86ba'
-        `https://forkify-api.herokuapp.com/api/v2/recipes/${id}`);
+        `${(0, _config.API_URL)}/${id}`);
         const data = await res.json();
         if (!res.ok) throw new Error(` ${data.message} ${res.status}`);
         const { recipe } = data.data;
@@ -1993,7 +1992,7 @@ const loadRecipe = async function(id) {
     }
 };
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"jnFvT":[function(require,module,exports,__globalThis) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","./js/config":"7c2aR"}],"jnFvT":[function(require,module,exports,__globalThis) {
 exports.interopDefault = function(a) {
     return a && a.__esModule ? a : {
         default: a
@@ -2023,7 +2022,13 @@ exports.export = function(dest, destName, get) {
     });
 };
 
-},{}],"f6ot0":[function(require,module,exports,__globalThis) {
+},{}],"7c2aR":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "API_URL", ()=>API_URL);
+const API_URL = `https://forkify-api.herokuapp.com/api/v2/recipes`;
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"f6ot0":[function(require,module,exports,__globalThis) {
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
  *
@@ -2609,6 +2614,7 @@ try {
 }
 
 },{}],"lQ82q":[function(require,module,exports,__globalThis) {
+//import { Fraction } from 'fractional';
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _iconsSvg = require("url:../img/icons.svg");
@@ -2618,112 +2624,108 @@ class RecipeView {
     #data;
     render(data) {
         this.#data = data;
-        const markup = this.#generateMarkup();
         this.#clear();
+        const markup = this.#generateMarkup();
+        this.#parentElement.insertAdjacentHTML('afterbegin', markup);
+    }
+    renderSpinner() {
+        const markup = `
+      <div class="spinner">
+        <svg>
+          <use href="${(0, _iconsSvgDefault.default)}#icon-loader"></use>
+        </svg>
+      </div>
+    `;
+        this.#parentElement.innerHTML = '';
         this.#parentElement.insertAdjacentHTML('afterbegin', markup);
     }
     #clear() {
         this.#parentElement.innerHTML = '';
     }
-    renderSpinner = function() {
-        const markup = `<div class="spinner">
-            <svg>
-              <use href="${(0, _iconsSvgDefault.default)}#icon-loader"></use>
-            </svg>
-          </div> 
-          `;
-        this.#parentElement.innerHTML = ``;
-        this.#parentElement.insertAdjacentHTML('afterbegin', markup);
-    };
     #generateMarkup() {
         return `
-    <figure class="recipe__fig">
-              <img src="${this.#data.image}" alt="${this.#data.title}" class="recipe__img" />
-              <h1 class="recipe__title">
-                <span>${this.#data.title}</span>
-              </h1>
-            </figure>
-    
-            <div class="recipe__details">
-              <div class="recipe__info">
-                <svg class="recipe__info-icon">
-                  <use href="${0, _iconsSvgDefault.default}#icon-clock"></use>
-                </svg>
-                <span class="recipe__info-data recipe__info-data--minutes">${this.#data.cookingTime}</span>
-                <span class="recipe__info-text">minutes</span>
+      <figure class="recipe__fig">
+        <img src="${this.#data.image}" alt="${this.#data.title}" class="recipe__img" />
+        <h1 class="recipe__title">
+          <span>${this.#data.title}</span>
+        </h1>
+      </figure>
+
+      <div class="recipe__details">
+        <div class="recipe__info">
+          <svg class="recipe__info-icon">
+            <use href="${0, _iconsSvgDefault.default}#icon-clock"></use>
+          </svg>
+          <span class="recipe__info-data recipe__info-data--minutes">${this.#data.cookingTime}</span>
+          <span class="recipe__info-text">minutes</span>
+        </div>
+        <div class="recipe__info">
+          <svg class="recipe__info-icon">
+            <use href="${0, _iconsSvgDefault.default}#icon-users"></use>
+          </svg>
+          <span class="recipe__info-data recipe__info-data--people">${this.#data.servings}</span>
+          <span class="recipe__info-text">servings</span>
+
+          <div class="recipe__info-buttons">
+            <button class="btn--tiny btn--decrease-servings">
+              <svg>
+                <use href="${0, _iconsSvgDefault.default}#icon-minus-circle"></use>
+              </svg>
+            </button>
+            <button class="btn--tiny btn--increase-servings">
+              <svg>
+                <use href="${0, _iconsSvgDefault.default}#icon-plus-circle"></use>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="recipe__user-generated">
+          <svg>
+            <use href="${0, _iconsSvgDefault.default}#icon-user"></use>
+          </svg>
+        </div>
+        <button class="btn--round">
+          <svg>
+            <use href="${0, _iconsSvgDefault.default}#icon-bookmark-fill"></use>
+          </svg>
+        </button>
+      </div>
+
+      <div class="recipe__ingredients">
+        <h2 class="heading--2">Recipe ingredients</h2>
+        <ul class="recipe__ingredient-list">
+          ${this.#data.ingredients.map((ing)=>`
+            <li class="recipe__ingredient">
+              <svg class="recipe__icon">
+                <use href="${0, _iconsSvgDefault.default}#icon-check"></use>
+              </svg>
+              <div class="recipe__quantity">
+                ${ing.quantity ? new Fraction(ing.quantity).toString() : ''}
               </div>
-              <div class="recipe__info">
-                <svg class="recipe__info-icon">
-                  <use href="${0, _iconsSvgDefault.default}#icon-users"></use>
-                </svg>
-                <span class="recipe__info-data recipe__info-data--people">${this.#data.servings}</span>
-                <span class="recipe__info-text">servings</span>
-    
-                <div class="recipe__info-buttons">
-                  <button class="btn--tiny btn--increase-servings">
-                    <svg>
-                      <use href="${0, _iconsSvgDefault.default}#icon-minus-circle"></use>
-                    </svg>
-                  </button>
-                  <button class="btn--tiny btn--increase-servings">
-                    <svg>
-                      <use href="${0, _iconsSvgDefault.default}#icon-plus-circle"></use>
-                    </svg>
-                  </button>
-                </div>
+              <div class="recipe__description">
+                <span class="recipe__unit">${ing.unit}</span>
+                ${ing.description}
               </div>
-    
-              <div class="recipe__user-generated">
-                <svg>
-                  <use href="src/img/icons.svg#icon-user"></use>
-                </svg>
-              </div>
-              <button class="btn--round">
-                <svg class="">
-                  <use href="src/img/icons.svg#icon-bookmark-fill"></use>
-                </svg>
-              </button>
-            </div>
-    
-            <div class="recipe__ingredients">
-              <h2 class="heading--2">Recipe ingredients</h2>
-              <ul class="recipe__ingredient-list">
-              ${recipe.ingredients.map((ing)=>{
-            return `
-                <li class="recipe__ingredient">
-                  <svg class="recipe__icon">
-                    <use href="src/img/icons.svg#icon-check"></use>
-                  </svg>
-                  <div class="recipe__quantity">${ing.quantity}</div>
-                  <div class="recipe__description">
-                    <span class="recipe__unit">${ing.unit}</span>
-                    ${ing.description}
-                  </div>
-                </li>
-    
-                `;
-        }).join('')} 
-    
-            </div>
-    
-            <div class="recipe__directions">
-              <h2 class="heading--2">How to cook it</h2>
-              <p class="recipe__directions-text">
-                This recipe was carefully designed and tested by
-                <span class="recipe__publisher">${recipe.publisher}</span>. Please check out
-                directions at their website.
-              </p>
-              <a
-                class="btn--small recipe__btn"
-                href="${recipe.sourceUrl}"
-                target="_blank"
-              >
-                <span>Directions</span>
-                <svg class="search__icon">
-                  <use href="src/img/icons.svg#icon-arrow-right"></use>
-                </svg>
-              </a>
-            </div>
+            </li>
+          `).join('')}
+        </ul>
+      </div>
+
+      <div class="recipe__directions">
+        <h2 class="heading--2">How to cook it</h2>
+        <p class="recipe__directions-text">
+          This recipe was carefully designed and tested by
+          <span class="recipe__publisher">${this.#data.publisher}</span>. Please check out
+          directions at their website.
+        </p>
+        <a class="btn--small recipe__btn" href="${this.#data.sourceUrl}" target="_blank">
+          <span>Directions</span>
+          <svg class="search__icon">
+            <use href="${0, _iconsSvgDefault.default}#icon-arrow-right"></use>
+          </svg>
+        </a>
+      </div>
     `;
     }
 }
@@ -2732,6 +2734,6 @@ exports.default = new RecipeView();
 },{"url:../img/icons.svg":"g4cBE","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"g4cBE":[function(require,module,exports,__globalThis) {
 module.exports = module.bundle.resolve("icons.3eb43249.svg") + "?" + Date.now();
 
-},{}]},["cdvRe","dGopa"], "dGopa", "parcelRequirea6cc", {}, "./", "/")
+},{}]},["e8Une","dGopa"], "dGopa", "parcelRequirea6cc", {}, "./", "/")
 
 //# sourceMappingURL=starter.7c28844b.js.map

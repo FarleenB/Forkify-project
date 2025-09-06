@@ -7,9 +7,6 @@ import recipeView from '../views/recipeview.js';
 import 'core-js/stable';
 import 'regenerator-runtime/runtime'
 
-const img = document.createElement("img");
-img.src = icons;
-document.body.appendChild(img);
 
 const recipeContainer = document.querySelector('.recipe');
 
@@ -51,8 +48,10 @@ recipeView.render(model.state.recipe);
 
 controlRecipes();
 
-['hashchange', 'load'].forEach(ev => window.addEventListener(ev,showRecipe )) 
-
+//['hashchange', 'load'].forEach(ev => window.addEventListener(ev,showRecipe )) 
+['hashchange', 'load'].forEach(ev =>
+  window.addEventListener(ev, controlRecipes)
+);
 // window.addEventListener('hashchange', showRecipe);
 // window.addEventListener('load', showRecipe);
 
