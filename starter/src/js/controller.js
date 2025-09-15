@@ -1,3 +1,5 @@
+
+
 // import * as model from './model.js'
 import * as model from '../model.js';
 import recipeView from '../views/recipeview.js';
@@ -53,7 +55,7 @@ controlRecipes();
   window.addEventListener(ev, controlRecipes)
 );
 // window.addEventListener('hashchange', showRecipe);
-// window.addEventListener('load', showRecipe);
+ window.addEventListener('load', showRecipe);
 
 
 
